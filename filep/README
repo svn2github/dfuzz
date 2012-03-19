@@ -4,6 +4,16 @@ FileP File Fuzzer 0.2.
 September 2006, Written by Jesse Burns (jesse@isecpartners.com)
 and modified by Tim Newsham (tim@isecpartners.com).
 
+Recent modifications made by Jake. 
+Example Run:
+
+ulimit -c unlimited; python file.py -m 200 -o out -l -b 20 -c 'pdftotext %targ' EV_AgreementSchools.pdf
+
+Use ulimit command to turn on unlimited core dumps. 
+This will run the fuzzer 200 times in batchs of 20 pdf files. This will fuzz the application pdftotext with a sample file EV_AgreementSchools.pdf
+
+Make sure nothing of value exists in the out directory. 
+
 Copyright (C) 2006, Information Security Partners, LLC.
 
 This program is free software; you can redistribute it and/or modify
