@@ -93,7 +93,8 @@ def loadFunction(fn) :
 def runCmd(cmd, src, targ, proc) :
     """Invoke the command and process the results."""
     # XXX run in a debugger and catch exceptions.
-    cmd = cmd.replace('%targ', targ)
+    target_file = os.path.abspath(os.path.join(src,targ))
+    cmd = cmd.replace('%targ', target_file)
     res = os.popen(cmd).read()
     return proc(src, targ, res)
 
@@ -161,11 +162,12 @@ def main():
                 for x in xrange(ops.batch) :
                     outfn = os.path.join(ops.outDir, '%s-%d%s' % (base, x, ext))
                     writeFile(outfn, fuzzer.next())
-                if runCmd(ops.cmd, (dir,base,ext), ops.outDir, ops.detector) :
-                    print 'something dropped!'
-                    die('something dropped!')
+                file_listing = os.listdir(ops.outDir)
+                for file in file_listing:
+                    if runCmd(ops.cmd, ops.outDir, file, ops.detector) :
+                        print 'something dropped!'
+                        die('something dropped!')
                 nfiles += ops.batch
-
                 dt = time.time() - startTime + 0.000001
                 print "\tseed %d run %d, Files/sec: %.1f" % (ops.seed, nfiles, nfiles / dt)
             # end while more time and files
