@@ -1,6 +1,21 @@
 Fuzzbox 0.3
 (C)2007 Information Security Partners Inc.
 
+
+#HOWTO INSTALL Fuzzbox
+yum install vorbis-tools.x86_64 libvorbis-devel.x86_64 libvorbis.x86_64
+su -c 'make'
+wget http://ekyo.nerim.net/software/pyogg/pyvorbis-1.4.tar.gz
+tar xzvf pyvorbis-1.4.tar.gz
+cd pyvorbis-1.4.tar.gz
+./config_unix.py
+python setup.py install 
+
+#HOWTO USE (sample fuzzing mpg123 program)
+#yum install mpg123
+python fuzzbox.py --filetype=mp3 --source=stereo.mp3 --program=mpg123 --timeout=3 --fuzzmax=2000 --logfile=logfile.txt
+
+
 Fuzzbox creates corrupt but structurally valid sound files, and
 optionally launches them off in a player, gathering backtraces and
 register information. Also included is a standalone tool to reset
