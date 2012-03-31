@@ -1,4 +1,4 @@
-FETCH_CMD=	fetch
+FETCH_CMD=	wget
 PY_LIB=		/usr/local/lib/python2.5
 MUTAGEN_SITE=	http://www.sacredchao.net/~piman/software/
 MUTAGEN_DIST=	mutagen-1.11
