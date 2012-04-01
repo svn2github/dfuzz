@@ -122,13 +122,14 @@ def getOptions():
     parser.add_option('-t', dest='maxTime', action='store',
         help='Maximum time to spend on each src file.',
         default=5, type=int)
+    parser.add_option('-i', dest='inputDir', action='store',
+        help='Input direcotry for filep where sample files are located', default=None)
 
     ops,args = parser.parse_args()
-    ops.srcFiles = args
     if ops.cmd is None :
         parser.error("Must specify a command.")
-    if len(ops.srcFiles) == 0 :
-        parser.error("Must specify at least one source file.")
+    if not ops.inputDir:
+        parser.error("Must specify an input directory.")
     return ops
 
 def main():
@@ -138,7 +139,7 @@ def main():
 
     if not isDirEmpty(ops.outDir) :
         die('Output directory has files.  Use an empty directory')
-    print 'Src files: %s' % ', '.join(ops.srcFiles)
+    print 'Input Directory: %s' % ', '.join(ops.inputDir)
     print 'Command: %s' % ops.cmd
     print 'Files per batch run: %d' % ops.batch
     print 'Output dir: %s' % ops.outDir
@@ -146,7 +147,8 @@ def main():
     ops.seed -= 1
     while 1 :   # forever (if ops.loop)
         ops.seed += 1
-        for fn in ops.srcFiles :   # cycle through all files...
+        for fn in os.listdir(ops.inputDir) :   # cycle through all files...
+            fn = os.path.abspath(os.path.join(ops.inputDir, fn))
             dir,base,ext = splitFilename(fn)
             d = readFile(fn)
             sq = squnch.Squncher(random.Random(ops.seed))
