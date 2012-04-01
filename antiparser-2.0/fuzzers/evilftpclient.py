@@ -13,6 +13,7 @@ import getopt
 import socket
 import string
 import getpass
+sys.path.append("../")
 from antiparser import *
 
 def usage():
