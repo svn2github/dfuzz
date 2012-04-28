@@ -48,7 +48,7 @@ class Monitor:
         core_files = []
         self.scan()
         for file in self.new_files:
-            if "core" in str(file):
+            if str(file).startswith("core."):
                 core_files.append(file)
         return core_files
     
@@ -56,3 +56,5 @@ if __name__ == "__main__":
     m = Monitor("./")
     print m.get_new_files()
     print m.files
+    print m.get_core_files()
+    print m.get_new_core_files()
