@@ -28,14 +28,41 @@ import time
 
 LINE_BUFFERED = 1
 
-#NOTE: the first argument is a list
-p = subprocess.Popen(['gdb'], bufsize=LINE_BUFFERED, stdin=subprocess.PIPE)
-for cmd in ["help\n", "help data\n"]:
-    time.sleep(1) # a delay to see that the commands appear one by one
-    p.stdin.write(cmd)
-    # even without .flush() it works as expected on my machine
-p.stdin.close()
-#print p.communicate("help")
-
-#class Core():
+class Core():
+    def start_gdb(self):
+        self.gdb = subprocess.Popen(['gdb'], bufsize=LINE_BUFFERED, stdin=subprocess.PIPE)
+        time.sleep(1)
+        return self.gdb 
+            
+    def set_core_file(self, core_file):
+        """
+        load core file in gdb
+        """
+        if self.gdb:
+            self.gdb.stdin.write("core-file %s\n" %core_file)    
     
+    def unset_environment(self):
+        if self.gdb:
+            self.gdb.stdin.write("unset environment\n")
+            self.gdb.stdin.write("y\n")
+        
+    def set_program(self, program):
+        if self.gdb:
+            self.gdb.stdin.write("file %s\n" %program)
+    
+    def get_backtrace(self):
+        if self.gdb:
+            self.gdb.stdin.write("bt 10\n")
+    
+    def stop_gdb(self):
+        self.gdb.close()    
+        
+        
+if __name__ == "__main__":
+    c = Core()
+    c.start_gdb()
+    c.set_program("/usr/bin/pdftotext")
+    c.set_core_file("core.11203")
+    output = c.get_backtrace()
+    print "!!!!!!!!!!!!!!!!!!!!BACKTRACE!!!!!!!!!!!!!!"
+    print output
