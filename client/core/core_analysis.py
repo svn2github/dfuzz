@@ -4,6 +4,7 @@ import os
 import subprocess 
 import glob
 import time 
+import hashlib
 
 #bt_dict = {}
 #fh = open("gdb_cmds", "w")
@@ -30,7 +31,7 @@ LINE_BUFFERED = 1
 
 class Core():
     def start_gdb(self):
-        self.gdb = subprocess.Popen(['gdb'], bufsize=LINE_BUFFERED, stdin=subprocess.PIPE)
+        self.gdb = subprocess.Popen(['gdb'], bufsize=LINE_BUFFERED, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         time.sleep(1)
         return self.gdb 
             
@@ -53,9 +54,15 @@ class Core():
     def get_backtrace(self):
         if self.gdb:
             self.gdb.stdin.write("bt 10\n")
+        out, err = self.gdb.communicate()
+        return out
     
     def stop_gdb(self):
         self.gdb.close()    
+        
+    def get_unique_crash_hash(self, backtrace):
+        crash_hash = hashlib.sha1(backtrace)
+        return crash_hash.hexdigest()
         
         
 if __name__ == "__main__":
@@ -66,3 +73,4 @@ if __name__ == "__main__":
     output = c.get_backtrace()
     print "!!!!!!!!!!!!!!!!!!!!BACKTRACE!!!!!!!!!!!!!!"
     print output
+    print c.get_unique_crash_hash(output)
