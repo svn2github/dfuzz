@@ -1,7 +1,0 @@
-#HOWTO
-First download an html file or a set of html files and put them in the html1 directory and name them 1.html, 2.html, etc..
-Then execute 
-'python htmler.py' 
-
-Then execute
-'python launch.py'
