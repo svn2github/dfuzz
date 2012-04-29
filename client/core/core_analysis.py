@@ -50,9 +50,12 @@ class Core():
         if self.gdb:
             self.gdb.stdin.write("file %s\n" %program)
     
-    def get_backtrace(self):
+    def get_backtrace(self, length=10):
+        """
+        @param length: length of backtrace 
+        """
         if self.gdb:
-            self.gdb.stdin.write("bt 10\n")
+            self.gdb.stdin.write("bt %s\n" %str(length))
         out, err = self.gdb.communicate()
         return out
     
@@ -62,12 +65,19 @@ class Core():
         self.gdb.kill()    
         
     def get_unique_crash_hash(self, backtrace):
+        """
+        @param backtrace: 
+        """
         crash_hash = hashlib.sha1(backtrace)
         return crash_hash.hexdigest()
 
 class Crash():
 
     def get_file_that_cause_crash(self, core_file, mutation_dir):
+        """
+        @param core_file: core dump file 
+        @param mutation_dir: directory where mutated/generated files are loaded into the fuzzed program 
+        """
         min_len = str(len(mutation_dir) - 3)
         cmd = 'strings -n ' + min_len + ' ' + core_file + '| grep "' + mutation_dir + '" | grep pdf | head -1'
         crash_file = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True).communicate()[0]
@@ -76,6 +86,8 @@ class Crash():
     def compute_sha1_hash_of_file(self, file):
         """
         compute the sha1 sum of a file
+        @param file: file to hash
+        @return: Hex representation of message digest (hash) of file
         """
         sha1_hash = hashlib.sha1()
         file_handle = open(file, "rb")
