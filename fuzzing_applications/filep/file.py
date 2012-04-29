@@ -178,7 +178,8 @@ def main():
                         runCmd(ops.cmd, ops.outDir, file, ops.detector)
                     except:
                         print 'something dropped!'
-                        die('something dropped!')
+                        #die('something dropped!')
+                        pass
                 nfiles += ops.batch
                 dt = time.time() - startTime + 0.000001
                 print "\tseed %d run %d, Files/sec: %.1f" % (ops.seed, nfiles, nfiles / dt)
