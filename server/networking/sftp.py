@@ -13,8 +13,9 @@ ssh = paramiko.SSHClient()
 ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
 ssh.connect(host, username="root", password=None)
 sftp = ssh.open_sftp()
-source = "test.txt"
-destination = "/root/test.txt"
-sftp.put(source, destination)
+local_file = "test.txt"
+remote_file = "/root/test.txt"
+#sftp.put(local_file, remote_file)
+sftp.get(remote_file, local_file)
 sftp.close()
 ssh.close()
