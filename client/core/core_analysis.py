@@ -5,15 +5,18 @@ import subprocess
 import time 
 import hashlib
 import re
+import glob
+import sys
 
 LINE_BUFFERED = 1
 
-class Core():
+class CoreGDB():
     def start_gdb(self):
         """
         initalize gdb and return a process handle to the program
         """
-        self.gdb = subprocess.Popen(['gdb'], bufsize=LINE_BUFFERED, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        #self.gdb = subprocess.Popen(['gdb'], bufsize=LINE_BUFFERED, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+        self.gdb = subprocess.Popen(['gdb'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
         time.sleep(1)
         return self.gdb 
             
@@ -47,8 +50,8 @@ class Core():
         """
         if self.gdb:
             self.gdb.stdin.write("bt %s\n" %str(length))
-        out, err = self.gdb.communicate()
-        return out
+        
+        return self.gdb.communicate()[0]
     
     #reverse backtrace  (show reverse-backtrace)
     
@@ -68,6 +71,24 @@ class Core():
                 bt = bt + line.split(" in ")[1].split("()")[0].strip() 
         crash_hash = hashlib.sha1(bt)
         return crash_hash.hexdigest()
+
+class CoreFileSize():
+    def get_unique_cores(self, directory):
+        """
+        Calculate unique core files based on file size. Files are measured in kilibytes
+        @return: list of unique core files 
+        @rtype: array
+        """
+        core_dic = {}
+        unique_cores = []
+        for core_file in glob.glob(directory+"core.*"): 
+            (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(core_file)
+            kb = size/1024
+            if not core_dic.get(kb):
+                core_dic[kb] = core_file
+                unique_cores.append(core_file)
+        return unique_cores
+            
 
 class Crash():
 
@@ -111,15 +132,20 @@ class Crash():
 
         
 if __name__ == "__main__":
+    boo = CoreFileSize()
+    print boo.get_unique_cores("/home/username/workspace/dfuzz/trunk/fuzzing_applications/filep/")
     c1 = Crash()
     print c1.get_file_that_cause_crash("core.11203", "fuzzing_applications/filep/out")
     print c1.compute_sha1_hash_of_file("core.11203")
     print c1.compute_sha256_hash_of_file("core.11203")
-    c = Core()
-    c.start_gdb()
-    c.set_program("/usr/bin/pdftotext")
-    c.set_core_file("core.11203")
-    output = c.get_backtrace()
-    print "!!!!!!!!!!!!!!!!!!!!BACKTRACE!!!!!!!!!!!!!!"
-    print output
-    print c.get_unique_crash_hash(output)
+    c = CoreGDB()
+    #c.start_gdb()
+    #c.set_program("/usr/bin/pdftotext")
+#    for file in glob.glob("/home/username/workspace/dfuzz/trunk/fuzzing_applications/filep/core.*"):
+#        c.start_gdb()
+#        c.set_program("/usr/bin/pdftotext")
+#        c.set_core_file(file)
+#        output = c.get_backtrace()
+#        print "!!!!!!!!!!!!!!!!!!!!BACKTRACE!!!!!!!!!!!!!!"
+#        print output
+#        print c.get_unique_crash_hash(output)
