@@ -30,11 +30,28 @@ class Squncher:
   slide_step = 1
   ALL_CHARS = ''.join([chr(n) for n in xrange(256)])
   
+  
   def __init__(self, random_object, demoninator = 50):
     self.DENOM = demoninator
     self.r = random_object
+    self.PERCENT_N = '\x25\x6e\x25\x6e\x25\x6e\x25\x6e'
 
   def random_string(self, size, char_set = ALL_CHARS):
+    num = self.r.choice("123456789")
+    string = ""
+    if int(num) % 3 == 0 and size > 8:
+        new_size = size - 8
+        string = ''.join([self.r.choice(char_set) for n in xrange(new_size)])
+        string = string + self.PERCENT_N
+        return string
+    elif int(num) % 7 == 0 and size > 8:
+        new_size = size - 8
+        string = ''.join([self.r.choice(char_set) for n in xrange(new_size)])
+        string = string + self.PERCENT_N
+        return string
+    elif size % 8 == 0 and size > 8:
+        new_size = size/8
+        return ''.join([self.PERCENT_N for n in xrange(new_size)])
     return ''.join([self.r.choice(char_set) for n in xrange(size)])
   
   def eliminate_random(self, original):
