@@ -27,6 +27,8 @@ import os, random, sys, time
 from optparse import OptionParser
 import squnch
 import glob
+sys.path.append("../../client/controller/")
+import action
 
 def die(msg) :
     print msg
@@ -92,13 +94,15 @@ def loadFunction(fn) :
     except KeyError :
         die("Can't find %s." % fn)
 
-def runCmd(cmd, src, targ, proc) :
+def runCmd(cmd, src, targ, ctrl, time=None) :
     """Invoke the command and process the results."""
-    # XXX run in a debugger and catch exceptions.
     target_file = os.path.abspath(os.path.join(src,targ))
     cmd = cmd.replace('%targ', target_file)
-    res = os.popen(cmd).read()
-    return proc(src, targ, res)
+    if time:
+        ctrl.run_timed(cmd, time)
+    else:
+        ctrl.run(cmd)
+    
 
 def getOptions():
     """Perform option processing"""
@@ -121,6 +125,8 @@ def getOptions():
         help='directory to write the fuzz files to', default='files')
     parser.add_option('-s', dest='seed', action='store',
         help='Random number generator seed', default=0, type=int)
+    parser.add_option('-w', dest='wait', action='store',
+        help='Wait for X number of seconds', default=None, type=int)
     parser.add_option('-t', dest='maxTime', action='store',
         help='Maximum time to spend on each src file.',
         default=5, type=int)
@@ -135,10 +141,11 @@ def getOptions():
     return ops
 
 def main():
+    ctrl = action.Action()
     ops = getOptions()
     if ops.detector is not None :
         ops.detector = loadFunction(ops.detector)
-
+ 
     if not isDirEmpty(ops.outDir):
         emptyDir(ops.outDir)
         #die('Output directory has files.  Use an empty directory')
@@ -175,7 +182,7 @@ def main():
                 
                 for file in file_listing:
                     try:
-                        runCmd(ops.cmd, ops.outDir, file, ops.detector)
+                        runCmd(ops.cmd, ops.outDir, file, ctrl, ops.wait)
                     except:
                         print 'something dropped!'
                         #die('something dropped!')

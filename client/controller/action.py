@@ -22,7 +22,7 @@ class Action():
         @param cmd: Command that will be executed
         @param seconds: seconds to wait before the program is killed
         """
-        pipe = subprocess.Popen(cmd, shell=True)
+        pipe = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         time.sleep(seconds)
         if pipe:
             pipe.kill()
@@ -33,8 +33,8 @@ class Action():
         os.killpg(pro.pid, signal.SIGTERM)
         
     def run(self, cmd):
-        subprocess.call(cmd)
-    
+        pipe = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        pipe.communicate()
         
 if __name__ == "__main__":
     a = Action()
