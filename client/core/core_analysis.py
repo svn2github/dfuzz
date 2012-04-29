@@ -72,10 +72,39 @@ class Crash():
         cmd = 'strings -n ' + min_len + ' ' + core_file + '| grep "' + mutation_dir + '" | grep pdf | head -1'
         crash_file = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True).communicate()[0]
         return crash_file
+    
+    def compute_sha1_hash_of_file(self, file):
+        """
+        compute the sha1 sum of a file
+        """
+        sha1_hash = hashlib.sha1()
+        file_handle = open(file, "rb")
+        #read 16M at a time (this will prevent against memory exhaustion)
+        data = file_handle.read(16 * 1024 * 1024)
+        sha1_hash.update(data)
+        file_handle.close()
+        return sha1_hash.hexdigest()
+    
+    def compute_sha256_hash_of_file(self, file):
+        """
+        compute the sha2 sum of a file
+        @param file: file to hash
+        @return: Hex representation of message digest (hash) of file
+        """
+        sha256_hash = hashlib.sha256()
+        file_handle = open(file, "rb")
+        #read 16M at a time (this will prevent against memory exhaustion)
+        data = file_handle.read(16 * 1024 * 1024)
+        sha256_hash.update(data)
+        file_handle.close()
+        return sha256_hash.hexdigest()
+
         
 if __name__ == "__main__":
     c1 = Crash()
     print c1.get_file_that_cause_crash("core.11203", "fuzzing_applications/filep/out")
+    print c1.compute_sha1_hash_of_file("core.11203")
+    print c1.compute_sha256_hash_of_file("core.11203")
     c = Core()
     c.start_gdb()
     c.set_program("/usr/bin/pdftotext")
