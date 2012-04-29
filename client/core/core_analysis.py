@@ -2,7 +2,6 @@
 
 import os
 import subprocess 
-import glob
 import time 
 import hashlib
 
@@ -57,15 +56,26 @@ class Core():
         out, err = self.gdb.communicate()
         return out
     
+    #reverse backtrace  (show reverse-backtrace)
+    
     def stop_gdb(self):
-        self.gdb.close()    
+        self.gdb.kill()    
         
     def get_unique_crash_hash(self, backtrace):
         crash_hash = hashlib.sha1(backtrace)
         return crash_hash.hexdigest()
-        
+
+class Crash():
+
+    def get_file_that_cause_crash(self, core_file, mutation_dir):
+        min_len = str(len(mutation_dir) - 3)
+        cmd = 'strings -n ' + min_len + ' ' + core_file + '| grep "' + mutation_dir + '" | grep pdf | head -1'
+        crash_file = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True).communicate()[0]
+        return crash_file
         
 if __name__ == "__main__":
+    c1 = Crash()
+    print c1.get_file_that_cause_crash("core.11203", "fuzzing_applications/filep/out")
     c = Core()
     c.start_gdb()
     c.set_program("/usr/bin/pdftotext")
