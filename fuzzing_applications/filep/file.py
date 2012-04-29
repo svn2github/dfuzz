@@ -39,6 +39,7 @@ def isDirEmpty(dn) :
 def emptyDir(dn) :
     """Remove all files in a directory."""
     for fn in glob.glob(os.path.join(dn, '*')):
+        fn = os.path.split(fn)[1]
         os.remove(os.path.join(dn, fn))
 
 def readFile(fn) :
@@ -138,8 +139,10 @@ def main():
     if ops.detector is not None :
         ops.detector = loadFunction(ops.detector)
 
-    if not isDirEmpty(ops.outDir) :
-        die('Output directory has files.  Use an empty directory')
+    if not isDirEmpty(ops.outDir):
+        emptyDir(ops.outDir)
+        #die('Output directory has files.  Use an empty directory')
+    
     print 'Input Directory: %s' % ', '.join(ops.inputDir)
     print 'Command: %s' % ops.cmd
     print 'Files per batch run: %d' % ops.batch
