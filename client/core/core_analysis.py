@@ -4,27 +4,7 @@ import os
 import subprocess 
 import time 
 import hashlib
-
-#bt_dict = {}
-#fh = open("gdb_cmds", "w")
-#fh.write("bt\n")
-#fh.write("quit\n")
-#fh.close()
-#core_files = glob.glob("core.*")
-#for core_file in core_files:
-#    print "processing " + core_file
-#    backtrace = ""
-#    cmd = 'gdb -x "gdb_cmds" -q pdftotext ' + core_file + '| grep "\#"'  
-#    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True).communicate()[0]
-#    tmp = str.split(p, "\n")
-#    for line in tmp: 
-#        if len(str.split(line, " in ")) >= 2:
-#            backtrace = backtrace + str.split(line, " in ")[1]
-#    
-#    bt_dict[backtrace] = core_file
-#print "unique core dumps"
-#print len(bt_dict)
-
+import re
 
 LINE_BUFFERED = 1
 
@@ -68,7 +48,14 @@ class Core():
         """
         @param backtrace: 
         """
-        crash_hash = hashlib.sha1(backtrace)
+        bt = ""
+        pattern = re.compile(r"#[0-9]+\s+0x[a-zA-Z0-9_]+\s+in")
+        backtrace = backtrace.split('\n')
+        for line in backtrace:
+            if pattern.match(line):
+                #assumes debugging symbols (gets function names of backtrace)
+                bt = bt + line.split(" in ")[1].split("()")[0].strip() 
+        crash_hash = hashlib.sha1(bt)
         return crash_hash.hexdigest()
 
 class Crash():
