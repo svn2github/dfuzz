@@ -1,6 +1,6 @@
 import os 
 
-class Monitor:
+class DirectoryMonitor:
     def __init__(self, directory):
         """
         @param directory: directory that will be monitored
@@ -53,7 +53,7 @@ class Monitor:
         return core_files
     
 if __name__ == "__main__":
-    m = Monitor("./")
+    m = DirectoryMonitor("./")
     print m.get_new_files()
     print m.files
     print m.get_core_files()
