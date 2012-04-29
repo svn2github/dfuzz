@@ -7,7 +7,7 @@ and modified by Tim Newsham (tim@isecpartners.com).
 Recent modifications made by Jake. 
 Example Run:
 
-ulimit -c unlimited; python file.py -m 200 -o out -l -b 20 -c 'pdftotext %targ' sample.pdf
+ulimit -c unlimited; python file.py -m 100000 -o output_dir -i input_dir -l -b 20 -c 'pdftotext %targ' sample.pdf
 
 Use ulimit command to turn on unlimited core dumps. 
 This will run the fuzzer 200 times in batchs of 20 pdf files. This will fuzz the application pdftotext with a sample file EV_AgreementSchools.pdf
