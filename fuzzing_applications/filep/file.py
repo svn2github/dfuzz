@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 import os, random, sys, time
 from optparse import OptionParser
 import squnch
+import glob
 
 def die(msg) :
     print msg
@@ -33,11 +34,11 @@ def die(msg) :
 
 def isDirEmpty(dn) :
     """Test if a directory is empty."""
-    return os.listdir(dn) == []
+    return not glob.glob(os.path.join(dn, '*'))
 
 def emptyDir(dn) :
     """Remove all files in a directory."""
-    for fn in os.listdir(dn) :
+    for fn in glob.glob(os.path.join(dn, '*')):
         os.remove(os.path.join(dn, fn))
 
 def readFile(fn) :
@@ -147,7 +148,8 @@ def main():
     ops.seed -= 1
     while 1 :   # forever (if ops.loop)
         ops.seed += 1
-        for fn in os.listdir(ops.inputDir) :   # cycle through all files...
+        for fn in glob.glob(os.path.join(ops.inputDir, '*')):   # cycle through all files...
+            fn = os.path.split(fn)[1]
             fn = os.path.abspath(os.path.join(ops.inputDir, fn))
             dir,base,ext = splitFilename(fn)
             d = readFile(fn)
@@ -164,9 +166,14 @@ def main():
                 for x in xrange(ops.batch) :
                     outfn = os.path.join(ops.outDir, '%s-%d%s' % (base, x, ext))
                     writeFile(outfn, fuzzer.next())
-                file_listing = os.listdir(ops.outDir)
+                file_listing = []
+                for ofile in glob.glob(os.path.join(ops.outDir, '*')):
+                    file_listing.append(os.path.split(ofile)[1])
+                
                 for file in file_listing:
-                    if runCmd(ops.cmd, ops.outDir, file, ops.detector) :
+                    try:
+                        runCmd(ops.cmd, ops.outDir, file, ops.detector)
+                    except:
                         print 'something dropped!'
                         die('something dropped!')
                 nfiles += ops.batch
