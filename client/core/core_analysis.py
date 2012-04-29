@@ -10,6 +10,9 @@ LINE_BUFFERED = 1
 
 class Core():
     def start_gdb(self):
+        """
+        initalize gdb and return a process handle to the program
+        """
         self.gdb = subprocess.Popen(['gdb'], bufsize=LINE_BUFFERED, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         time.sleep(1)
         return self.gdb 
@@ -17,16 +20,24 @@ class Core():
     def set_core_file(self, core_file):
         """
         load core file in gdb
+        @param core_file: core dump file to be processed by gdb
         """
         if self.gdb:
             self.gdb.stdin.write("core-file %s\n" %core_file)    
     
     def unset_environment(self):
+        """
+        clear all environment variables
+        """
         if self.gdb:
             self.gdb.stdin.write("unset environment\n")
             self.gdb.stdin.write("y\n")
         
     def set_program(self, program):
+        """
+        @param program: executable that crashed and in turn 
+                        caused the operating system to produce a core file
+        """
         if self.gdb:
             self.gdb.stdin.write("file %s\n" %program)
     
