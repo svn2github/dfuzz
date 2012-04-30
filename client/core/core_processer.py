@@ -2,7 +2,8 @@ import os
 import core_analysis
 import sys
 import shutil
-sys.path.append("../config/")
+cwd = os.path.split(os.path.realpath(__file__))[0]
+sys.path.append(os.path.join(cwd, "../config/"))
 import config
 
 
@@ -15,7 +16,7 @@ class ProcessCores():
         self.config = config.Config()
         self.crash = core_analysis.Crash()
         self.config.parse()
-        self.mutation_folder = os.path.abspath(os.path.join("../../",self.config.config["mutation_folder"]))
+        self.mutation_folder = os.path.abspath(os.path.join("../../", self.config.config["mutation_folder"]))
                 
     def process_cores(self):
         """

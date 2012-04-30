@@ -27,8 +27,11 @@ import os, random, sys, time
 from optparse import OptionParser
 import squnch
 import glob
-sys.path.append("../../client/controller/")
+cwd = os.path.split(os.path.realpath(__file__))[0]
+sys.path.append(os.path.join(cwd,"../../client/controller/"))
+sys.path.append(os.path.join(cwd,"../../client/core/"))
 import action
+import core_processer
 
 def die(msg) :
     print msg
@@ -142,6 +145,8 @@ def getOptions():
 
 def main():
     ctrl = action.Action()
+    core_p = core_processer.ProcessCores()
+    
     ops = getOptions()
     if ops.detector is not None :
         ops.detector = loadFunction(ops.detector)
@@ -184,17 +189,16 @@ def main():
                     try:
                         runCmd(ops.cmd, ops.outDir, file, ctrl, ops.wait)
                     except:
-                        print 'something dropped!'
-                        #die('something dropped!')
+                        print 'Failed to execute command'
                         pass
                 nfiles += ops.batch
                 dt = time.time() - startTime + 0.000001
+                #process all crashes/core files and their respective mutated files
+                core_p.process_cores()
                 print "\tseed %d run %d, Files/sec: %.1f" % (ops.seed, nfiles, nfiles / dt)
-            # end while more time and files
-        # end for all src files
+            
         if not ops.loop :
             break
-    # end forever
     print 'done.'
   
 if __name__ == '__main__':
