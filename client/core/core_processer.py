@@ -16,9 +16,10 @@ class ProcessCores():
         self.config = config.Config()
         self.crash = core_analysis.Crash()
         self.config.parse()
-        config_dir = os.path.join(cwd, "../../")
-        self.mutation_folder = os.path.abspath(os.path.join(config_dir, self.config.config["mutation_folder"]))
-        self.fuzz_prog_folder = os.path.abspath(os.path.join(config_dir, self.config.config["fuzzing_prog_folder"]))        
+        trunk = os.path.join(cwd, "../../")
+        self.results_dir = os.path.join(trunk, "client/results")
+        self.mutation_folder = os.path.abspath(os.path.join(trunk, self.config.config["mutation_folder"]))
+        self.fuzz_prog_folder = os.path.abspath(os.path.join(trunk, self.config.config["fuzzing_prog_folder"]))        
    
     def process_cores(self):
         """
@@ -37,7 +38,7 @@ class ProcessCores():
         #get unique client identification number
         dfuzz_id = self.config.get_dfuzz_id()
         #get unique core files using filesize technique
-        unique_cores = self.cfsize.get_unique_cores(self.fuzz_prog_folder)
+        unique_cores = self.cfsize.get_unique_cores(self.results_dir)
         
         #process unique core files 
         for unique_core in unique_cores:
