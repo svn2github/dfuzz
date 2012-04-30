@@ -1,0 +1,4 @@
+#!/bin/bash
+
+python controller/controller.py 1 &
+python controller/controller.py
