@@ -19,7 +19,6 @@ class Controller():
         _action = action.Action()
         #turn on core dumps
         _action.run("ulimit -c unlimited")
-        import pdb;pdb.set_trace()
         trunk = os.path.join(cwd, "../../")
         os.chdir(os.path.join(trunk,self.config.config["fuzzing_prog_folder"]))
         fuzz_prog = os.path.split(self.config.config["fuzzing_prog"])[1]
