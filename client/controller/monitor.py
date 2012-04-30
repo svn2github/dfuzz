@@ -1,4 +1,5 @@
 import os 
+import copy
 
 class DirectoryMonitor:
     def __init__(self, directory):
@@ -21,7 +22,7 @@ class DirectoryMonitor:
         for f in self.files:
             if not self.old_files.get(f):
                 self.new_files.append(f)
-        self.old_files = self.files
+        self.old_files = copy.copy(self.files)
         
     def get_new_files(self):
         """
