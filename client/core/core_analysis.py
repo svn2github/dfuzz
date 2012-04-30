@@ -81,7 +81,7 @@ class CoreFileSize():
         """
         core_dic = {}
         unique_cores = []
-        for core_file in glob.glob(directory+"core.*"): 
+        for core_file in glob.glob(os.path.join(directory,"core.*")): 
             (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(core_file)
             kb = size/1024
             if not core_dic.get(kb):
@@ -100,7 +100,7 @@ class Crash():
         min_len = str(len(mutation_dir) - 3)
         cmd = 'strings -n ' + min_len + ' ' + core_file + '| grep "' + mutation_dir + '" | grep pdf | head -1'
         crash_file = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True).communicate()[0]
-        return crash_file
+        return str(crash_file).strip()
     
     def compute_sha1_hash_of_file(self, file):
         """
