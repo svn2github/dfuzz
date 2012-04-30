@@ -17,8 +17,7 @@ class CoreGDB():
         """
         #self.gdb = subprocess.Popen(['gdb'], bufsize=LINE_BUFFERED, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         self.gdb = subprocess.Popen(['gdb'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
-        time.sleep(1)
-        return self.gdb 
+        time.sleep(1) 
             
     def set_core_file(self, core_file):
         """
