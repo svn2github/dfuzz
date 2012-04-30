@@ -11,6 +11,7 @@ import sys
 LINE_BUFFERED = 1
 
 class CoreGDB():
+    
     def start_gdb(self):
         """
         initalize gdb and return a process handle to the program
@@ -72,25 +73,32 @@ class CoreGDB():
         return crash_hash.hexdigest()
 
 class CoreFileSize():
+    
+    def __init__(self):
+        """
+        initialize unique core variables
+        """
+        self.unique_cores = []
+        self.unique_core_dic = {}
+        
     def get_unique_cores(self, directory):
         """
         Calculate unique core files based on file size. Files are measured in kilibytes
         @return: list of unique core files 
         @rtype: array
         """
-        core_dic = {}
-        unique_cores = []
+        self.unique_cores = []
         for core_file in glob.glob(os.path.join(directory,"core.*")): 
             (mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime) = os.stat(core_file)
             kb = size/1024
-            if not core_dic.get(kb):
-                core_dic[kb] = core_file
-                unique_cores.append(core_file)
-        return unique_cores
+            if not self.unique_core_dic.get(kb):
+                self.unique_core_dic[kb] = core_file
+                self.unique_cores.append(core_file)
+        return self.unique_cores
             
 
 class Crash():
-
+    
     def get_file_that_cause_crash(self, core_file, mutation_dir):
         """
         @param core_file: core dump file 
