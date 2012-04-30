@@ -11,6 +11,7 @@ sys.path.append(os.path.join(cwd, "../core/"))
 import config
 import core_processer
 
+
 class Controller():
     def __init__(self):
         self.config = config.Config()
@@ -28,12 +29,14 @@ class Controller():
         os.system(fuzz_cmd)
     
     def start_monitor(self):
+        """
+        start monitoring a directory and reporting results
+        """
         results_dir = os.path.join(cwd,"../results")
         m = monitor.DirectoryMonitor(results_dir)
         _core_processer = core_processer.ProcessCores()
         while 1:
             new_files = m.get_new_files()
-            print new_files
             if new_files:
                 self.core_p.process_core_bts()
             time.sleep(5)
