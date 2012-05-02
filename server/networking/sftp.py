@@ -12,14 +12,14 @@ class SFTP():
         self.ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
         
     def get(self, host, username, local_file, remote_file):
-        self.ssh.connect(host, username="root", password=None)
+        self.ssh.connect(host, username=username, password=None)
         sftp = self.ssh.open_sftp()
         sftp.get(remote_file, local_file)
         sftp.close()
         self.ssh.close()
 
     def put(self, host, username, local_file, remote_file):
-        self.ssh.connect(host, username="root", password=None)
+        self.ssh.connect(host, username=username, password=None)
         sftp = self.ssh.open_sftp()
         sftp.put(local_file, remote_file)
         sftp.close()
