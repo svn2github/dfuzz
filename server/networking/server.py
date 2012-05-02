@@ -1,5 +1,6 @@
 import MySQLdb
 import SocketServer
+import threading
 
 class FuzzServer(SocketServer.BaseRequestHandler):
 
@@ -32,21 +33,24 @@ class FuzzServer(SocketServer.BaseRequestHandler):
         
         self.dbconnection.close()
         print "Disconnected"
-        
+
+class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    pass
+    
+    
 if __name__ == "__main__":
     HOST, PORT = "0.0.0.0", 12456
 
     # Create the server, binding to localhost on port 12456
     print "Opening port %i." % PORT
-    server = SocketServer.TCPServer((HOST, PORT), FuzzServer)
+    server = ThreadedTCPServer((HOST, PORT), FuzzServer)
 
     # create local db connection
     # front end server maintains constant db connection since it is the only 'user'		    	
+    server_thread = threading.Thread(target=server.serve_forever)
+    server_thread.start()
     
-    # Activate the server; this will keep running until you
-    # interrupt the program with Ctrl-C
-    server.serve_forever()
-
+    
 
 
 
