@@ -32,6 +32,7 @@ sys.path.append(os.path.join(cwd,"../../client/controller/"))
 sys.path.append(os.path.join(cwd,"../../client/core/"))
 import action
 import core_processer
+import cleaner
 
 def die(msg) :
     print msg
@@ -146,6 +147,7 @@ def getOptions():
 def main():
     ctrl = action.Action()
     core_p = core_processer.ProcessCores()
+    _cleaner = cleaner.Clean()
     
     ops = getOptions()
     if ops.detector is not None :
@@ -195,6 +197,7 @@ def main():
                 dt = time.time() - startTime + 0.000001
                 #process all crashes/core files and their respective mutated files
                 core_p.process_cores()
+                _cleaner.remove_cores(cwd)
                 print "\tseed %d run %d, Files/sec: %.1f" % (ops.seed, nfiles, nfiles / dt)
             
         if not ops.loop :
