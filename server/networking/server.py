@@ -1,4 +1,4 @@
-import _mysql
+import MySQLdb
 import SocketServer
 
 class FuzzServer(SocketServer.BaseRequestHandler):
@@ -14,24 +14,22 @@ class FuzzServer(SocketServer.BaseRequestHandler):
         self.bthash = self.values[1]
         self.filename = self.values[2]
         
-        #build query string        
-        self.insertstring = "INSERT INTO CRASHES(hostid,bthash,filename) VALUES ("+self.hostid+",'"+self.bthash+"','"+self.filename+"');"
         
         
-        print self.insertstring
-        
-        #send query to database
         print "Making a connection to MySQL database"
-        self.dbconnection=_mysql.connect(host="localhost",port=3306,user="dfuzz",passwd="jereSILV0406!(&*",db="DFUZZ") 
+        self.dbconnection = MySQLdb.connect(host="localhost",port=3306,user="dfuzz",passwd="jereSILV0406!(&*",db="DFUZZ") 
         print "Connected"
         
         #SQL INJECTION PREVENTION
         ################################################
-        #cursor = self.dbconnection.cursor()
-        #cursor.execute("INSERT INTO CRASHES(hostid,bthash,filename) VALUES (%s,'%s','%s');", (self.hostid,self.bthash,self.filename) )
+        cursor = self.dbconnection.cursor()
+        try:
+           cursor.execute("INSERT INTO CRASHES(hostid,bthash,filename) VALUES (%s,%s,%s);", (self.hostid,self.bthash,self.filename) )
+        except:
+           #error occured
+           pass
         ################################################
         
-        self.dbconnection.query(self.insertstring)
         self.dbconnection.close()
         print "Disconnected"
         
