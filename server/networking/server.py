@@ -35,6 +35,10 @@ class FuzzServer(SocketServer.BaseRequestHandler):
         print "Disconnected"
         
     def tokenize_protocol(self, data):
+        """
+        Parse protocol and organize protocol information
+        @param data: The data received from the client
+        """
         print "tokenizing protocol"
         self.values = self.data.split("|")
         self.message_type = self.values[0]
@@ -43,7 +47,11 @@ class FuzzServer(SocketServer.BaseRequestHandler):
         self.filename = self.values[3]
             
     def retreive_crash_file(self):
-        self.sftp = sftp.SFTP()
+        """
+        After receiving a crash message from a client this function should use 
+        sftp to transfer the file that caused the crash on the client back to the server
+        """
+        _sftp = sftp.SFTP()
         if not os.path.exists("loot"):
             os.mkdir("loot")
         host = self.client_address[0]
@@ -51,8 +59,8 @@ class FuzzServer(SocketServer.BaseRequestHandler):
         filename = os.path.split(self.filename)[1]
         local_file = os.path.join("loot", filename)
         remote_file = self.filename
-        self.sftp.get(host, username, local_file, remote_file)
-        self.sftp = None
+        _sftp.get(host, username, local_file, remote_file)
+        _sftp = None
         
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     pass
