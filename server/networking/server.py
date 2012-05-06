@@ -12,11 +12,12 @@ class FuzzServer(SocketServer.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()	
         # tokenize received data
         print "Received "+self.data
-        import pdb;pdb.set_trace()
         self.tokenize_protocol(self.data)
         if self.message_type == "40":
             self.retreive_crash_file()
+        self.talk_to_database()
         
+    def talk_to_database(self):
         print "Making a connection to MySQL database"
         self.dbconnection = MySQLdb.connect(host="localhost",port=3306,user="dfuzz",passwd="jereSILV0406!(&*",db="DFUZZ") 
         print "Connected"
@@ -30,9 +31,7 @@ class FuzzServer(SocketServer.BaseRequestHandler):
            #error occured
            pass
         ################################################
-        
         self.dbconnection.close()
-        print "Disconnected"
         
     def tokenize_protocol(self, data):
         """
