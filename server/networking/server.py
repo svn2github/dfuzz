@@ -1,8 +1,10 @@
 import MySQLdb
 import SocketServer
 import threading
+import sftp
+import os
 
-class FuzzServer(SocketServer.BaseRequestHandler):
+class FuzzServer(SocketServer.BaseRequestHandler):    
 
     def handle(self):
         print "Receiving data from "+self.client_address[0]
@@ -10,12 +12,10 @@ class FuzzServer(SocketServer.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()	
         # tokenize received data
         print "Received "+self.data
-        self.values = self.data.split("|")
-        self.hostid = self.values[0]
-        self.bthash = self.values[1]
-        self.filename = self.values[2]
-        
-        
+        import pdb;pdb.set_trace()
+        self.tokenize_protocol(self.data)
+        if self.message_type == "40":
+            self.retreive_crash_file()
         
         print "Making a connection to MySQL database"
         self.dbconnection = MySQLdb.connect(host="localhost",port=3306,user="dfuzz",passwd="jereSILV0406!(&*",db="DFUZZ") 
@@ -33,7 +33,27 @@ class FuzzServer(SocketServer.BaseRequestHandler):
         
         self.dbconnection.close()
         print "Disconnected"
-
+        
+    def tokenize_protocol(self, data):
+        print "tokenizing protocol"
+        self.values = self.data.split("|")
+        self.message_type = self.values[0]
+        self.hostid = self.values[1]
+        self.bthash = self.values[2]
+        self.filename = self.values[3]
+            
+    def retreive_crash_file(self):
+        self.sftp = sftp.SFTP()
+        if not os.path.exists("loot"):
+            os.mkdir("loot")
+        host = self.client_address[0]
+        username = "root"
+        filename = os.path.split(self.filename)[1]
+        local_file = os.path.join("loot", filename)
+        remote_file = self.filename
+        self.sftp.get(host, username, local_file, remote_file)
+        self.sftp = None
+        
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     pass
     
