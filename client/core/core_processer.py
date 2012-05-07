@@ -59,7 +59,7 @@ class ProcessCores():
             results_file = os.path.split(results_file)[1]+".results"
             results_file = os.path.join(self.config.results_dir, results_file)
             r_fh = open(results_file, "w")
-            copy_of_unique_core = os.path.join(self.config.results_dir, os.path.split(unique_core)[1])
+            copy_of_unique_core = os.path.join(self.config.results_dir, os.path.split(crash_file)[1])
             r_fh.write(dfuzz_id+"|"+crash_hash+"|"+ copy_of_unique_core)
             r_fh.close()        
                 
