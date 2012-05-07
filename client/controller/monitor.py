@@ -56,11 +56,14 @@ class DirectoryMonitor:
         return core_files
     
 class ProcMonitor:
-    def __init__(self, application):
+    def __init__(self, application, max_ptime=3):
         """
-        @param application: application being fuzzed that needs to be monitored 
+        @param application: Application being fuzzed that needs to be monitored
+        @param max_ptime: Maximum amount of time a processes should be running.
+                          If process exceeds this time it will be killed 
         """
         self.application = application
+        self.max_ptime = max_ptime
         self.action = action.Action()
         self.process_ids = {}
         
@@ -70,7 +73,7 @@ class ProcMonitor:
         If an app has been running for too long then kill it 
         """
         while(True):
-            time.sleep(3)
+            time.sleep(self.max_ptime)
             cmd = "ps -A | grep " + str(self.application) 
             ps = self.action.run(cmd)
             if ps: 
