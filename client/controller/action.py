@@ -34,7 +34,7 @@ class Action():
         
     def run(self, cmd):
         pipe = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        pipe.communicate()
+        return pipe.communicate()   
         
 if __name__ == "__main__":
     a = Action()

@@ -1,5 +1,7 @@
 import os 
 import copy
+import action
+import time
 
 class DirectoryMonitor:
     def __init__(self, directory):
@@ -53,9 +55,40 @@ class DirectoryMonitor:
                 core_files.append(file)
         return core_files
     
+class ProcMonitor:
+    def __init__(self, application):
+        """
+        @param application: application being fuzzed that needs to be monitored 
+        """
+        self.application = application
+        self.action = action.Action()
+        self.process_ids = {}
+        
+    def watch_fuzzed_app(self):
+        """
+        Watch for application that enters infinite loop or cpu exhaustion state. 
+        If an app has been running for too long then kill it 
+        """
+        while(True):
+            time.sleep(3)
+            cmd = "ps -A | grep " + str(self.application) 
+            ps = self.action.run(cmd)
+            if ps: 
+                #get process id 
+                proc_id = ps[0].split(" ")[0].strip()
+                if self.process_ids.get(proc_id):
+                    k_cmd = "kill -9 " + proc_id
+                    self.action.run(k_cmd)
+                else:
+                    self.process_ids[proc_id] = proc_id
+            
 if __name__ == "__main__":
     m = DirectoryMonitor("./")
     print m.get_new_files()
     print m.files
     print m.get_core_files()
     print m.get_new_core_files()
+    
+    p = ProcMonitor("sleep")
+    p.watch_fuzzed_app()
+    
