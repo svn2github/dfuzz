@@ -3,6 +3,7 @@ import SocketServer
 import threading
 import sftp
 import os
+import random
 
 class FuzzServer(SocketServer.BaseRequestHandler):    
 
@@ -15,9 +16,13 @@ class FuzzServer(SocketServer.BaseRequestHandler):
         self.tokenize_protocol(self.data)
         if self.message_type == "40":
             self.retreive_crash_file()
-        self.talk_to_database()
+            self.add_crash_info_to_database()
+        if self.message_type == "42":
+            self.handle_report_ready()
+            
+        #
         
-    def talk_to_database(self):
+    def add_crash_info_to_database(self):
         print "Making a connection to MySQL database"
         self.dbconnection = MySQLdb.connect(host="localhost",port=3306,user="dfuzz",passwd="jereSILV0406!(&*",db="DFUZZ") 
         print "Connected"
@@ -41,9 +46,20 @@ class FuzzServer(SocketServer.BaseRequestHandler):
         print "tokenizing protocol"
         self.values = self.data.split("|")
         self.message_type = self.values[0]
-        self.hostid = self.values[1]
-        self.bthash = self.values[2]
-        self.filename = self.values[3]
+        if self.message_type == "42": 
+            self.first_time = self.values[1]
+        else:     
+            self.hostid = self.values[1]
+            self.bthash = self.values[2]
+            self.filename = self.values[3]
+    
+    def handle_report_ready(self):
+        if self.first_time == "1":
+            #get dfuzz id from database
+            #setting dfuzz id to random number temporarilly
+            self.dfuzz_id_counter =  str(random.randint(1,500000))
+            self.request.sendall(self.dfuzz_id_counter)
+        
             
     def retreive_crash_file(self):
         """
