@@ -21,7 +21,8 @@ class Config():
                                     "fuzzing_prog_args": True,
                                     "users": True,
                                     "mutation_folder": True,
-                                    "fuzzed_program": True
+                                    "fuzzed_program": True,
+                                    "fuzzed_program_name": True
                                     }
         
         self.supported_id_configurations = {"dfuzz_id": True}
