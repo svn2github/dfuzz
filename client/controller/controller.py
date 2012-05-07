@@ -21,7 +21,8 @@ class Controller():
     def start(self):
         _action = action.Action()
         #turn on core dumps
-        _action.run("ulimit -c unlimited")
+        #max size of 22000 blocks (guessing that is 22 megabytes on typical linux system)
+        _action.run("ulimit -c 22000")
         trunk = os.path.join(cwd, "../../")
         os.chdir(os.path.join(trunk,self.config.config["fuzzing_prog_folder"]))
         fuzz_prog = os.path.split(self.config.config["fuzzing_prog"])[1]
@@ -33,13 +34,15 @@ class Controller():
         start monitoring a directory and reporting results
         """
         results_dir = os.path.join(cwd,"../results")
-        m = monitor.DirectoryMonitor(results_dir)
+        dm = monitor.DirectoryMonitor(results_dir)
+        pm = monitor.ProcMonitor(self.config.config["fuzzed_program_name"])
         _core_processer = core_processer.ProcessCores()
         while 1:
-            new_files = m.get_new_files()
+            pm.watch_fuzzed_app()
+            new_files = dm.get_new_files()
             if new_files:
                 self.core_p.process_core_bts()
-            time.sleep(5)
+            time.sleep(4)
             
 if __name__ == "__main__":
     c = Controller()

@@ -72,18 +72,16 @@ class ProcMonitor:
         Watch for application that enters infinite loop or cpu exhaustion state. 
         If an app has been running for too long then kill it 
         """
-        while(True):
-            time.sleep(self.max_ptime)
-            cmd = "ps -A | grep " + str(self.application) 
-            ps = self.action.run(cmd)
-            if ps: 
-                #get process id 
-                proc_id = ps[0].split(" ")[0].strip()
-                if self.process_ids.get(proc_id):
-                    k_cmd = "kill -9 " + proc_id
-                    self.action.run(k_cmd)
-                else:
-                    self.process_ids[proc_id] = proc_id
+        cmd = "ps -A | grep " + str(self.application) 
+        ps = self.action.run(cmd)
+        if ps: 
+            #get process id 
+            proc_id = ps[0].split(" ")[0].strip()
+            if self.process_ids.get(proc_id):
+                k_cmd = "kill -9 " + proc_id
+                self.action.run(k_cmd)
+            else:
+                self.process_ids[proc_id] = proc_id
             
 if __name__ == "__main__":
     m = DirectoryMonitor("./")
@@ -93,5 +91,6 @@ if __name__ == "__main__":
     print m.get_new_core_files()
     
     p = ProcMonitor("sleep")
-    p.watch_fuzzed_app()
+    for i in range(1,1000):
+        p.watch_fuzzed_app()
     
