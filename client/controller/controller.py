@@ -9,14 +9,14 @@ cwd = os.path.split(os.path.realpath(__file__))[0]
 sys.path.append(os.path.join(cwd, "../config/"))
 sys.path.append(os.path.join(cwd, "../core/"))
 import config
-import core_processer
+import core_processor
 
 
 class Controller():
     def __init__(self):
         self.config = config.Config()
         self.config.parse()
-        self.core_p = core_processer.ProcessCores()
+        self.core_p = core_processor.ProcessCores()
     
     def start(self):
         _action = action.Action()
@@ -36,7 +36,7 @@ class Controller():
         results_dir = os.path.join(cwd,"../results")
         dm = monitor.DirectoryMonitor(results_dir)
         pm = monitor.ProcMonitor(self.config.config["fuzzed_program_name"])
-        _core_processer = core_processer.ProcessCores()
+        _core_processer = core_processor.ProcessCores()
         while 1:
             pm.watch_fuzzed_app()
             new_files = dm.get_new_files()
