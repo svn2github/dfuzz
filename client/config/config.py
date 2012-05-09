@@ -1,6 +1,7 @@
 import os
 import sys
 import inspect
+cwd = os.path.split(os.path.realpath(__file__))[0]
 
 class Config():
     def __init__(self):
@@ -10,7 +11,7 @@ class Config():
         self.__dfuzz_id = None
         
         self.config = {}
-        self.config_dir = os.path.abspath(os.path.dirname(inspect.getfile(inspect.currentframe()))) # script directory
+        self.config_dir = cwd
         self.dfuzz_id_file = os.path.abspath(os.path.join(self.config_dir, "dfuzz.id"))
         self.config_file = os.path.abspath(os.path.join(self.config_dir, "dfuzz.config"))
         self.results_dir = os.path.abspath(os.path.join(self.config_dir, "../results"))
