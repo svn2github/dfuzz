@@ -58,11 +58,6 @@ class Config():
         @return: dfuzz unique identification
         """
         return self.__dfuzz_id        
-        
-if __name__ == "__main__":
-    c = Config()
-    c.parse()
-    print c.config
-    print c.get_dfuzz_id()
+
                 
                 
