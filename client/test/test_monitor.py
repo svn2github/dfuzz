@@ -15,6 +15,9 @@ class TestMonitor(unittest.TestCase):
         self.directory_monitor = monitor.DirectoryMonitor(self.core_dir)
     
     def tearDown(self):
+        """
+        remove core file created by unit test if it exists
+        """
         core_1348 = os.path.join(self.core_dir, "core.1348")
         if os.path.exists(core_1348):
             os.remove(core_1348)
@@ -28,6 +31,9 @@ class TestMonitor(unittest.TestCase):
         self.assertTrue("core.1346" in new_files)
 
     def test_new_file_after_file_added(self):
+        """
+        test new file test after creating a new file in the core test directory
+        """
         new_files = self.directory_monitor.get_new_files()
         core_1348 = os.path.join(self.core_dir, "core.1348")
         cfh = open(core_1348, "w")
