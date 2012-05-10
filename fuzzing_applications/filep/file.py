@@ -31,7 +31,7 @@ cwd = os.path.split(os.path.realpath(__file__))[0]
 sys.path.append(os.path.join(cwd,"../../client/controller/"))
 sys.path.append(os.path.join(cwd,"../../client/core/"))
 import action
-import core_processer
+import core_processor
 import cleaner
 
 def die(msg) :
