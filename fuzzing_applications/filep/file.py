@@ -146,7 +146,7 @@ def getOptions():
 
 def main():
     ctrl = action.Action()
-    core_p = core_processer.ProcessCores()
+    core_p = core_processor.ProcessCores()
     _cleaner = cleaner.Clean()
     
     ops = getOptions()
