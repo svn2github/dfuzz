@@ -70,7 +70,6 @@ class ProcessCores():
         """
         @param new_files: new files that exist in results directory
         """
-        import pdb;pdb.set_trace()
         for file in new_files: 
             if ".results" in file: 
                 results_fh = open(os.path.join(self.results_dir, file), "r")
