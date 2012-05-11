@@ -105,7 +105,7 @@ class Crash():
         @param mutation_dir: directory where mutated/generated files are loaded into the fuzzed program 
         """
         min_len = str(len(mutation_dir) - 3)
-        cmd = 'strings -n ' + min_len + ' ' + core_file + '| grep "' + mutation_dir + '" | grep pdf | head -1'
+        cmd = 'strings -n ' + min_len + ' ' + core_file + '| grep "' + mutation_dir + '" | grep "\.pdf" | head -1'
         crash_file = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True).communicate()[0]
         return str(crash_file).strip()
     
