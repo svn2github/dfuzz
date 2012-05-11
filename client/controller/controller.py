@@ -42,6 +42,7 @@ class Controller():
             new_files = dm.get_new_files()
             if new_files:
                 self.core_p.process_core_bts()
+                self.core_p.report_results(new_files)
             time.sleep(4)
             
 if __name__ == "__main__":

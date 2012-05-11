@@ -4,7 +4,9 @@ import sys
 import shutil
 cwd = os.path.split(os.path.realpath(__file__))[0]
 sys.path.append(os.path.join(cwd, "../config/"))
+sys.path.append(os.path.join(cwd, "../networking/"))
 import config
+import client
 
 
 class ProcessCores():
@@ -12,6 +14,7 @@ class ProcessCores():
         """
         initialize configuration and other helper classes
         """
+        self.client = client.Client()
         self.cfsize = core_analysis.CoreFileSize()
         self.config = config.Config()
         self.crash = core_analysis.Crash()
@@ -62,8 +65,21 @@ class ProcessCores():
             copy_of_unique_core = os.path.join(self.config.results_dir, os.path.split(crash_file)[1])
             r_fh.write(dfuzz_id+"|"+crash_hash+"|"+ copy_of_unique_core)
             r_fh.close()        
+    
+    def report_results(self, new_files):
+        """
+        @param new_files: new files that exist in results directory
+        """
+        import pdb;pdb.set_trace()
+        for file in new_files: 
+            if ".results" in file: 
+                results_fh = open(os.path.join(self.results_dir, file), "r")
+                data = results_fh.read()
+                self.client.send(data)
+                results_fh.close()
                 
 if __name__ == "__main__":
     p = ProcessCores()
     p.process_cores()        
     p.process_core_bts()
+    p.report_results(["/home/username/workspace/dfuzz/trunk/client/results/4002992-7.results"])
