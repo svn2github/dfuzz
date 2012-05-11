@@ -6,16 +6,21 @@ import random
 
 class Client():
     def __init__(self, server, port):
+        """
+        @param server: IP address of server that we need to connect to 
+        @param port: port that we need to connect to (typically tcp port 12456) 
+        """
         self.server = server
         self.port = port
         
     
     def send(self, data):
+        """
+        @param data: data that will be sent to the server
+        """
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             # Connect to server and send data
-            print "Sending : "+data
-            print "to "+self.server+":"+str(self.port)+"\n"
             sock.connect((self.server, self.port))
             sock.sendall(data)
     
