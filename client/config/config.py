@@ -1,6 +1,5 @@
 import os
 import sys
-import inspect
 cwd = os.path.split(os.path.realpath(__file__))[0]
 
 class Config():
