@@ -5,7 +5,7 @@ import random
 
 
 class Client():
-    def __init__(self, server, port):
+    def __init__(self, server="192.168.1.78", port=12456):
         """
         @param server: IP address of server that we need to connect to 
         @param port: port that we need to connect to (typically tcp port 12456) 
