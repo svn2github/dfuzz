@@ -1,6 +1,5 @@
 import socket
 import sys
-import md5
 import random
 
 
@@ -35,7 +34,7 @@ if __name__ == "__main__":
     
     #generate rand string to send over the wire
     rand = random.randint(1000000,9999999)
-    hash = md5.new(str(rand))
+    hash = "12121235577"
     data = "10001|"+hash.hexdigest()+"|test"+str(rand)+".pdf" + "|" + "123808"
     
     #send data
