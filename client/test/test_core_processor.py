@@ -15,7 +15,7 @@ class TestCoreProcessor(unittest.TestCase):
 
     def test_core(self):
         self.core_processor.process_cores()
-        self.core_processor.gdb.stop_gdb()
+        #self.core_processor.gdb.stop_gdb()
 
    # def test_core_bt(self):
     #    self.core_processor.process_core_bts()
