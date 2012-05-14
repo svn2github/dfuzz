@@ -15,6 +15,12 @@ LINE_BUFFERED = 1
 
 class CoreGDB():
     
+    def __init__(self):
+        self.config = config.Config()
+        self.config.parse()
+        self.unique_cores = []
+        self.unique_core_dic = {}
+    
     def start_gdb(self):
         """
         initalize gdb and return a process handle to the program
@@ -64,7 +70,6 @@ class CoreGDB():
         frame_count = 0
         self.gdb.stdin.write("frame \n")
         line_in = self.gdb.stdout.readline()
-        #???? gdb writing to standard error???
         while ((not "you cannot go up" in line_in) and frame_count < 70):
             line_in = self.gdb.stdout.readline()
             frame_trace = frame_trace + str(line_in)
@@ -74,12 +79,23 @@ class CoreGDB():
    
     def get_unique_cores(self, directory):
         """
-        @param directory: directory that 
+        @param directory: directory where core files exist
         """
         self.unique_cores = []
         for core_file in glob.glob(os.path.join(directory,"core.*")):
-            self.gdb.set_program(self.config.config["fuzzed_program"])
-            self.gdb.set_core_file(core_file)
+            self.stop_gdb()
+            self.start_gdb()
+            self.set_program(self.config.config["fuzzed_program"])
+            self.set_core_file(core_file)
+            frame_trace = self.get_frame_trace()
+            crash_hash = self.get_unique_crash_hash(frame_trace)
+            if not self.unique_core_dic.get(crash_hash):
+                self.unique_core_dic[crash_hash] = core_file
+                self.unique_cores.append(core_file)
+        return self.unique_cores
+    
+    def get_cores(self, directory):
+        return glob.glob(os.path.join(directory,"core.*"))
             
     #reverse backtrace  (show reverse-backtrace)
     
@@ -109,7 +125,7 @@ class CoreGDB():
         when issuing the command 'bt'. 
         """
         bt = ""
-        pattern = re.compile(r"#[0-9]+\s+0x[a-zA-Z0-9_]+\s+in")
+        pattern = re.compile(r"[\(gdb\)]*\s*#[0-9]+\s+0x[a-zA-Z0-9_]+\s+in")
         backtrace = backtrace.split('\n')
         for line in backtrace:
             if pattern.match(line):
@@ -146,6 +162,9 @@ class CoreFileSize():
 class Crash():
     
     def __init__(self):
+        """
+        Initialize configuration
+        """
         self.config = config.Config()
         self.config.parse()
         self.fuzz_prog = self.config.config["fuzzed_program_name"]
@@ -153,7 +172,8 @@ class Crash():
     def get_file_that_cause_crash(self, core_file, mutation_dir):
         """
         @param core_file: core dump file 
-        @param mutation_dir: directory where mutated/generated files are loaded into the fuzzed program 
+        @param mutation_dir: directory where mutated/generated files are loaded into the fuzzed program
+        @return: return the name of the file that caused the crash 
         """
         min_len = str(len(mutation_dir) - 3)
         cmd = 'strings -n ' + min_len + ' ' + core_file + '| grep "' + mutation_dir + '" | grep "\.pdf" | grep -v ' + self.fuzz_prog + ' | head -1'
