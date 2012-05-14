@@ -1,0 +1,5 @@
+#!/bin/bash
+
+su -l fuzz1 -c "cd; cd dfuzz/trunk/client;./dfuzz_client &" &
+su -l fuzz2 -c "cd; cd dfuzz/trunk/client;./dfuzz_client &" & 
+su -l fuzz3 -c "cd; cd dfuzz/trunk/client;./dfuzz_client &" &   
