@@ -7,6 +7,9 @@ import hashlib
 import re
 import glob
 import sys
+cwd = os.path.split(os.path.realpath(__file__))[0]
+sys.path.append(os.path.join(cwd, "../config/"))
+import config
 
 LINE_BUFFERED = 1
 
@@ -50,7 +53,7 @@ class CoreGDB():
         """
         if self.gdb:
             self.gdb.stdin.write("bt %s\n" %str(length))
-        
+        time.sleep(2)
         return self.gdb.communicate()[0]
     
     #reverse backtrace  (show reverse-backtrace)
@@ -99,13 +102,18 @@ class CoreFileSize():
 
 class Crash():
     
+    def __init__(self):
+        self.config = config.Config()
+        self.config.parse()
+        self.fuzz_prog = self.config.config["fuzzed_program_name"]
+    
     def get_file_that_cause_crash(self, core_file, mutation_dir):
         """
         @param core_file: core dump file 
         @param mutation_dir: directory where mutated/generated files are loaded into the fuzzed program 
         """
         min_len = str(len(mutation_dir) - 3)
-        cmd = 'strings -n ' + min_len + ' ' + core_file + '| grep "' + mutation_dir + '" | grep "\.pdf" | head -1'
+        cmd = 'strings -n ' + min_len + ' ' + core_file + '| grep "' + mutation_dir + '" | grep "\.pdf" | grep -v ' + self.fuzz_prog + ' | head -1'
         crash_file = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True).communicate()[0]
         return str(crash_file).strip()
     
