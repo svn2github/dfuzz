@@ -20,7 +20,7 @@ class CoreGDB():
         initalize gdb and return a process handle to the program
         """
         #self.gdb = subprocess.Popen(['gdb'], bufsize=LINE_BUFFERED, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-        self.gdb = subprocess.Popen(['gdb'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
+        self.gdb = subprocess.Popen(['gdb'], stdin=subprocess.PIPE, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, shell=True)
         time.sleep(1) 
             
     def set_core_file(self, core_file):
@@ -56,14 +56,57 @@ class CoreGDB():
         time.sleep(2)
         return self.gdb.communicate()[0]
     
+    def get_frame_trace(self, length=10):
+        """
+        @param length: length of frame trace
+        """
+        frame_trace = ""
+        frame_count = 0
+        self.gdb.stdin.write("frame \n")
+        line_in = self.gdb.stdout.readline()
+        #???? gdb writing to standard error???
+        while ((not "you cannot go up" in line_in) and frame_count < 70):
+            line_in = self.gdb.stdout.readline()
+            frame_trace = frame_trace + str(line_in)
+            self.gdb.stdin.write("up \n")
+            frame_count = frame_count + 1
+        return frame_trace
+   
+    def get_unique_cores(self, directory):
+        """
+        @param directory: directory that 
+        """
+        self.unique_cores = []
+        for core_file in glob.glob(os.path.join(directory,"core.*")):
+            self.gdb.set_program(self.config.config["fuzzed_program"])
+            self.gdb.set_core_file(core_file)
+            
     #reverse backtrace  (show reverse-backtrace)
     
+    def gdb_is_alive(self):
+        """
+        Check to see if a gdb instance exists
+        @return: True if it is alive and False if a gdb instance does not exist
+        """
+        try:
+            _alive = False
+            if self.gdb:
+                _alive = True 
+            return _alive
+        except:
+            return False
+    
     def stop_gdb(self):
-        self.gdb.kill()    
+        """
+        kill gdb
+        """
+        if self.gdb:
+            self.gdb.kill()    
         
     def get_unique_crash_hash(self, backtrace):
         """
-        @param backtrace: 
+        @param backtrace: the functions and addresses that are displayed in GDB 
+        when issuing the command 'bt'. 
         """
         bt = ""
         pattern = re.compile(r"#[0-9]+\s+0x[a-zA-Z0-9_]+\s+in")
